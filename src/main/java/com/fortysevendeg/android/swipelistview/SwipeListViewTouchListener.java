@@ -376,15 +376,16 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
      */
     private void generateRevealAnimate(final View view, final boolean swap, final boolean swapRight, final int position) {
         int moveTo = 0;
-        if (opened.get(position)) {
-            if (!swap) {
-                moveTo = openedRight.get(position) ? (int) (viewWidth - rightOffset) : (int) (-viewWidth + leftOffset);
-            }
-        } else {
-            if (swap) {
-                moveTo = swapRight ? (int) (viewWidth - rightOffset) : (int) (-viewWidth + leftOffset);
-            }
-        }
+        if(downPosition >= 0)
+	        if (opened.get(position)) {
+	            if (!swap) {
+	                moveTo = openedRight.get(position) ? (int) (viewWidth - rightOffset) : (int) (-viewWidth + leftOffset);
+	            }
+	        } else {
+	            if (swap) {
+	                moveTo = swapRight ? (int) (viewWidth - rightOffset) : (int) (-viewWidth + leftOffset);
+	            }
+	        }
 
         animate(view)
                 .translationX(moveTo)
@@ -531,26 +532,28 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                 velocityTracker.addMovement(motionEvent);
                 velocityTracker.computeCurrentVelocity(1000);
                 float velocityX = Math.abs(velocityTracker.getXVelocity());
-                if (!opened.get(downPosition)) {
-                    if (swipeMode == SwipeListView.SWIPE_MODE_LEFT && velocityTracker.getXVelocity() > 0) {
-                        velocityX = 0;
-                    }
-                    if (swipeMode == SwipeListView.SWIPE_MODE_RIGHT && velocityTracker.getXVelocity() < 0) {
-                        velocityX = 0;
-                    }
-                }
+                if(downPosition >= 0)
+	                if (!opened.get(downPosition)) {
+	                    if (swipeMode == SwipeListView.SWIPE_MODE_LEFT && velocityTracker.getXVelocity() > 0) {
+	                        velocityX = 0;
+	                    }
+	                    if (swipeMode == SwipeListView.SWIPE_MODE_RIGHT && velocityTracker.getXVelocity() < 0) {
+	                        velocityX = 0;
+	                    }
+	                }
                 float velocityY = Math.abs(velocityTracker.getYVelocity());
                 boolean swap = false;
                 boolean swapRight = false;
                 if (minFlingVelocity <= velocityX && velocityX <= maxFlingVelocity && velocityY < velocityX) {
                     swapRight = velocityTracker.getXVelocity() > 0;
-                    if (opened.get(downPosition) && openedRight.get(downPosition) && swapRight) {
-                        swap = false;
-                    } else if (opened.get(downPosition) && !openedRight.get(downPosition) && !swapRight) {
-                        swap = false;
-                    } else {
-                        swap = true;
-                    }
+                    if(downPosition >= 0)
+	                    if (opened.get(downPosition) && openedRight.get(downPosition) && swapRight) {
+	                        swap = false;
+	                    } else if (opened.get(downPosition) && !openedRight.get(downPosition) && !swapRight) {
+	                        swap = false;
+	                    } else {
+	                        swap = true;
+	                    }
                 } else if (Math.abs(deltaX) > viewWidth / 2) {
                     swap = true;
                     swapRight = deltaX > 0;
